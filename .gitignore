@@ -64,5 +64,11 @@ __pycache__/
 *.log
 logs/
 
-# Poetry lock (optional - some keep it)
-poetry.lock
+
+
+# Root level init (shouldn't exist)
+/__init__.pypoetry.lock
+requirements.txt
+Pipfile
+Pipfile.lock
+/__init__.py
