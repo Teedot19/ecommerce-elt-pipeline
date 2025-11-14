@@ -1,0 +1,17 @@
+[32m2025-11-14 22:05:16 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - LOGS_CAPTURED - Started capturing logs in process (pid: 96275).
+[32m2025-11-14 22:05:16 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - run_ecommerce_ingestion - STEP_START - Started execution of step "run_ecommerce_ingestion".
+2025-11-14 22:05:16,236 - ingestion.generator - INFO - This is an incremental load 2025-11-13
+2025-11-14 22:05:16,236 - ingestion.generator - INFO - Running incremental load for 2025-11-13
+2025-11-14 22:05:16,266 - ingestion.generator - INFO - Wrote 200 customers rows → /Users/teedotflims/desktop/data/2025-11-13/customers_2025-11-13.csv
+2025-11-14 22:05:16,266 - ingestion.generator - INFO - Wrote 10 products rows → /Users/teedotflims/desktop/data/2025-11-13/products_2025-11-13.csv
+2025-11-14 22:05:16,296 - ingestion.generator - INFO - Wrote 2,000 orders rows → /Users/teedotflims/desktop/data/2025-11-13/orders_2025-11-13.csv
+2025-11-14 22:05:16,339 - ingestion.generator - INFO - Wrote 6,000 order_items rows → /Users/teedotflims/desktop/data/2025-11-13/order_items_2025-11-13.csv
+2025-11-14 22:05:16,368 - ingestion.generator - INFO - Wrote 2,000 payments rows → /Users/teedotflims/desktop/data/2025-11-13/payments_2025-11-13.csv
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - run_ecommerce_ingestion - Uploaded 5 files to GCS
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - run_ecommerce_ingestion - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - run_ecommerce_ingestion - Writing file at: /Users/teedotflims/projects/batch-data-pipeline/.tmp_dagster_home_h960itw8/storage/run_ecommerce_ingestion/2025-11-13 using PickledObjectFilesystemIOManager...
+2025-11-14 22:05:18,142 - alembic.runtime.migration - INFO - Context impl SQLiteImpl.
+2025-11-14 22:05:18,142 - alembic.runtime.migration - INFO - Will assume non-transactional DDL.
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - run_ecommerce_ingestion - ASSET_MATERIALIZATION - Materialized value run_ecommerce_ingestion.
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - run_ecommerce_ingestion - HANDLED_OUTPUT - Handled output "result" using IO manager "io_manager"
+[32m2025-11-14 22:05:18 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - afc0449a-f553-4e77-9c2f-318b690ac8ee - 96275 - run_ecommerce_ingestion - STEP_SUCCESS - Finished execution of step "run_ecommerce_ingestion" in 1.98s.

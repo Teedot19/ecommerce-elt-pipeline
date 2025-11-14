@@ -1,5 +1,22 @@
-pydantic
-requests
-duckdb
-pyarrow
-pandas
+-i https://pypi.org/simple
+cachetools==6.2.2; python_version >= '3.9'
+certifi==2025.11.12; python_version >= '3.7'
+charset-normalizer==3.4.4; python_version >= '3.7'
+faker==38.0.0; python_version >= '3.10'
+faker-commerce==1.0.4
+google-api-core==2.28.1; python_version >= '3.7'
+google-auth==2.43.0; python_version >= '3.7'
+google-cloud-core==2.5.0; python_version >= '3.7'
+google-cloud-storage==3.5.0; python_version >= '3.7'
+google-crc32c==1.7.1; python_version >= '3.9'
+google-resumable-media==2.7.2; python_version >= '3.7'
+googleapis-common-protos==1.72.0; python_version >= '3.7'
+idna==3.11; python_version >= '3.8'
+proto-plus==1.26.1; python_version >= '3.7'
+protobuf==6.33.1; python_version >= '3.9'
+pyasn1==0.6.1; python_version >= '3.8'
+pyasn1-modules==0.4.2; python_version >= '3.8'
+requests==2.32.5; python_version >= '3.9'
+rsa==4.9.1; python_version >= '3.6' and python_version < '4'
+tzdata==2025.2; python_version >= '2'
+urllib3==2.5.0; python_version >= '3.9'
