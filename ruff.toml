@@ -1,0 +1,5 @@
+fix = true
+
+[lint]
+select = ["E", "F", "I"]
+ignore = []

@@ -1,5 +1,6 @@
-from ingestion.generator import EcommerceDataGenerator
 from datetime import date
+
+from ingestion.generator import EcommerceDataGenerator
 
 
 def test_generator_writes_expected_files(temp_dir):

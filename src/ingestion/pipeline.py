@@ -1,10 +1,10 @@
-from pathlib import Path
-from datetime import date
 import os
+from datetime import date
+from pathlib import Path
 
-from ingestion.generator import EcommerceDataGenerator
 from ingestion.file_finder import list_csvs
 from ingestion.gcs_loader import upload_csvs_to_gcs
+from ingestion.generator import EcommerceDataGenerator
 
 
 def run_full_ingestion(run_dt: date, logger=None) -> dict:

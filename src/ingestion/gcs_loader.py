@@ -1,6 +1,8 @@
-from google.cloud import storage
 from pathlib import Path
 from typing import List
+
+from google.cloud import storage
+
 
 def upload_csvs_to_gcs(csv_files: List[Path], bucket_name: str, prefix: str, logger=None) -> List[str]:
     client = storage.Client()

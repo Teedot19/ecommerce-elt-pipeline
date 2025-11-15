@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='view') }}
 
 WITH src AS (
     SELECT * FROM {{ source('bronze', 'payments_raw') }}
