@@ -147,7 +147,7 @@ class EcommerceDataGenerator:
         return rows
 
     def _maybe_inject_bad_customer_data(self, row: Dict) -> Dict:
-        if random.random() < 0.05:
+        if random.random() < 0.005:
             issue = random.choice(["null_email", "invalid_country"])
             if issue == "null_email":
                 row["email"] = None
