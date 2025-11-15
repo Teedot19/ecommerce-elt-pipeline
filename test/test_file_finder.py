@@ -1,4 +1,4 @@
-from ingestion.file_finder import list_csvs
+from ingestion.utils.file_finder import list_csvs
 
 
 def test_list_csvs(temp_dir):

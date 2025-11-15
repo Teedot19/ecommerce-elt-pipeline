@@ -1,11 +1,11 @@
-from ingestion.gcs_loader import upload_csvs_to_gcs
+from ingestion.loaders.gcs_loader import upload_csvs_to_gcs
 
 
 def test_upload_to_gcs_uploads_when_missing(mocker, temp_dir):
     f = temp_dir / "customers.csv"
     f.write_text("data")
 
-    mock_client = mocker.patch("ingestion.gcs_loader.storage.Client")
+    mock_client = mocker.patch("ingestion.loaders.gcs_loader.storage.Client")
     bucket = mock_client.return_value.bucket.return_value
     blob = bucket.blob.return_value
 

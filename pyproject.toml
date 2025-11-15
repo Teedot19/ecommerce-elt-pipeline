@@ -1,12 +1,13 @@
 [tool.poetry]
-name = "batch-data-pipeline"
+name = "batch_data_pipeline"
 version = "0.1.0"
 description = "Batch data ingestion and processing pipeline."
 authors = ["Teedot19 <taiwo_dotun@yahoo.com>"]
 readme = "README.md"
 packages = [
     { include = "ingestion", from = "src" },
-    { include = "orchestration", from = "src" }
+    { include = "validation", from = "src" },
+    { include = "orchestration"}
 ]
 
 [tool.poetry.dependencies]
@@ -21,6 +22,7 @@ faker = "^38.0.0"
 faker-commerce = "^1.0.4"
 google-cloud-storage = "^3.5.0"
 dagster-dbt = "^0.28.2"
+pydantic = "^2.12.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

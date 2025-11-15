@@ -14,8 +14,8 @@ from dagster import (
 )
 from dagster_dbt import DbtCliResource
 
-from orchestration.assets import dbt_run, extract
-from orchestration.assets.extract import daily_partitions
+from assets import dbt_run, extract
+from assets.extract import daily_partitions
 
 # Ensure project root is importable (so 'assets/' can be imported)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -48,7 +48,7 @@ defs = Definitions(
     assets=all_assets,
     resources={
         "dbt": DbtCliResource(
-            project_dir="/Users/teedotflims/projects/batch-data-pipeline/ecommerce_analytics",
+            project_dir="/Users/teedotflims/projects/batch_data_pipeline/ecommerce_analytics",
             profiles_dir="/Users/teedotflims/.dbt",
         ),
     },

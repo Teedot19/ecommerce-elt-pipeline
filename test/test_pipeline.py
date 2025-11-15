@@ -1,6 +1,6 @@
 from datetime import date
 
-from ingestion.pipeline import os, run_full_ingestion
+from ingestion.loaders.pipeline import os, run_full_ingestion
 
 
 def test_pipeline_end_to_end(mocker, temp_dir):
@@ -8,7 +8,7 @@ def test_pipeline_end_to_end(mocker, temp_dir):
     mocker.patch.dict(os.environ, {"ECOMMERCE_DATA_DIR": str(temp_dir), "GCS_BUCKET": "test-bucket"})
 
     # mock GCS
-    mock_client = mocker.patch("ingestion.gcs_loader.storage.Client")
+    mock_client = mocker.patch("ingestion.loaders.gcs_loader.storage.Client")
     blob = mock_client.return_value.bucket.return_value.blob.return_value
     blob.exists.return_value = False
 
