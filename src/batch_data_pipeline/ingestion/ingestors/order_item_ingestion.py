@@ -5,8 +5,8 @@ from typing import Dict, Any, List, Tuple
 
 from batch_data_pipeline.validation.schema.order_items import OrderItem
 from batch_data_pipeline.validation.helpers import validate_records
-from batch_data_pipeline.ingestion.loaders.quarantined_data_uploader import upload_quarantine_to_gcs
-from batch_data_pipeline.ingestion.loaders.validated_data_uploader import upload_validated_to_gcs
+from batch_data_pipeline.ingestion.loaders.upload_quarantined_to_bucket import upload_quarantine_to_gcs
+from batch_data_pipeline.ingestion.loaders.upload_validated_to_bucket import upload_validated_to_gcs
 
 
 def read_csv(path: Path) -> List[Dict[str, Any]]:
