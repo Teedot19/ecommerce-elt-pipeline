@@ -1,18 +1,30 @@
+from dotenv import load_dotenv
+load_dotenv()
 from datetime import date
 from pathlib import Path
 import os
+from typing import List, Dict, Any, Tuple, Type
 
 from google.cloud import storage
 
-from batch_data_pipeline.ingestion.customer_ingestion import ingest_customers
-from batch_data_pipeline.ingestion.product_ingestion import ingest_products
-from batch_data_pipeline.ingestion.order_ingestion import ingest_orders
-from batch_data_pipeline.ingestion.order_item_ingestion import ingest_order_items
-from batch_data_pipeline.ingestion.payment_ingestion import ingest_payments
+
+bucket_name = os.getenv("GCS_BUCKET")
+if not bucket_name:
+    raise RuntimeError("GCS_BUCKET must be set")
+
+client = storage.Client()
+bucket = client.bucket(bucket_name)
+
+
+from batch_data_pipeline.ingestion.ingestors.customer_ingestion import ingest_customers
+from batch_data_pipeline.ingestion.ingestors.product_ingestion import ingest_products
+from batch_data_pipeline.ingestion.ingestors.order_ingestion import ingest_orders
+from batch_data_pipeline.ingestion.ingestors.order_item_ingestion import ingest_order_items
+from batch_data_pipeline.ingestion.ingestors.payment_ingestion import ingest_payments
 
 from batch_data_pipeline.ingestion.loaders.upload_csvs_to_bucket import upload_raw_files
 from batch_data_pipeline.generators.generator import EcommerceDataGenerator
-from ingestion.utils.file_finder import list_csvs
+from batch_data_pipeline.ingestion.utils.file_finder import list_csvs
 
 
 def run_full_ingestion(run_dt: date, logger=None):
@@ -46,11 +58,11 @@ def run_full_ingestion(run_dt: date, logger=None):
 
     # ------------------ VALIDATED / QUARANTINE ------------------
     results = {
-        "customers": ingest_customers(day_folder, run_dt, bucket_name),
-        "products": ingest_products(day_folder, run_dt, bucket_name),
-        "orders": ingest_orders(day_folder, run_dt, bucket_name),
-        "order_items": ingest_order_items(day_folder, run_dt, bucket_name),
-        "payments": ingest_payments(day_folder, run_dt, bucket_name),
+        "customers": ingest_customers(day_folder, run_dt, bucket),
+        "products": ingest_products(day_folder, run_dt, bucket),
+        "orders": ingest_orders(day_folder, run_dt, bucket),
+        "order_items": ingest_order_items(day_folder, run_dt, bucket),
+        "payments": ingest_payments(day_folder, run_dt, bucket),
     }
 
     return {
@@ -58,3 +70,13 @@ def run_full_ingestion(run_dt: date, logger=None):
         "raw_uploaded": raw_uris,
         "validated_and_quarantine": results,
     }
+
+
+if __name__ == "__main__":
+    import sys
+    import json
+    from datetime import date
+
+    run_date = date.fromisoformat(sys.argv[1])
+    summary = run_full_ingestion(run_date)
+    print(json.dumps(summary, indent=4, default=str))

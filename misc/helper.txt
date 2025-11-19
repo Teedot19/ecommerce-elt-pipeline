@@ -132,7 +132,7 @@ def parse_rows(rows):
             continue
 
 
-
+poetry run python -m batch_data_pipeline.main_runner 2025-11-15
 
 
 

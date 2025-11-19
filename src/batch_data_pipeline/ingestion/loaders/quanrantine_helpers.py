@@ -20,7 +20,7 @@ def write_quarantine_to_csv(rows: List[Dict[str, Any]], output_path: Path):
 
 
 def build_quarantine_blob_path(entity: str, run_date: str) -> str:
-    return f"quarantine_raw/{entity}/{entity}_{run_date}_quarantine.csv"
+    return f"quarantine_raw/run_date={run_date}/{entity}_quarantine.csv"
 
 
 def build_quarantine_temp_path(entity: str, run_date: str) -> Path:

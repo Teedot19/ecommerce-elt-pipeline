@@ -5,7 +5,7 @@ from google.cloud import storage
 
 
 def build_validated_blob_path(entity: str, run_date: str) -> str:
-    return f"validated_raw/{entity}/{entity}_{run_date}.csv"
+    return f"validated_raw/run_date={run_date}/{entity}.csv"
 
 
 def build_validated_temp_path(entity: str, run_date: str) -> Path:

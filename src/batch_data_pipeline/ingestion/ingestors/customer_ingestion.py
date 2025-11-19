@@ -1,12 +1,12 @@
 import csv
 from pathlib import Path
 from datetime import date
-from typing import Dict, Any, List, Tuple
+from typing import List, Dict, Any, Tuple, Type
 
 from batch_data_pipeline.validation.schema.customer import Customer
 from batch_data_pipeline.validation.helpers import validate_records
-from batch_data_pipeline.ingestion.loaders.upload_quarantine_to_bucket import upload_quarantine_to_gcs
-from batch_data_pipeline.ingestion.loaders.upload_validated_to_bucket import upload_validated_to_gcs
+from batch_data_pipeline.ingestion.loaders.upload_quarantined_to_bucket import upload_quarantine_to_bucket
+from batch_data_pipeline.ingestion.loaders.upload_validated_to_bucket import upload_validated_to_bucket
 
 
 
@@ -53,16 +53,16 @@ def ingest_customers(day_folder: Path, run_dt: date, bucket: str) -> Dict[str, A
     cleaned, invalid = validate_customer_rows(rows)
 
     # 3. Load validated rows
-    validated_path = upload_validated_to_gcs(
-        bucket_name=bucket,
+    validated_path = upload_validated_to_bucket(
+        bucket=bucket,
         entity=entity,
         run_date=run_dt.isoformat(),
         rows=cleaned,
     )
 
     # 4. Load invalid rows
-    quarantine_path = upload_quarantine_to_gcs(
-        bucket_name=bucket,
+    quarantine_path = upload_quarantine_to_bucket(
+        bucket=bucket,
         entity=entity,
         run_date=run_dt.isoformat(),
         rows=invalid,

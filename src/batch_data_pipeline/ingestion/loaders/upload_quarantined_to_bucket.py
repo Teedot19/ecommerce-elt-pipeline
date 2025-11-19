@@ -1,4 +1,4 @@
-from .quarantine_helpers import (
+from .quanrantine_helpers import (
     build_quarantine_temp_path,
     build_quarantine_blob_path,
     build_gcs_uri,
@@ -6,6 +6,8 @@ from .quarantine_helpers import (
     blob_exists,
     upload_file,
 )
+from typing import List, Dict, Any, Tuple, Type
+from google.cloud import storage
 
 
 def upload_quarantine_to_bucket(

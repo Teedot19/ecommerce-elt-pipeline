@@ -5,8 +5,8 @@ from typing import Dict, Any, List, Tuple
 
 from batch_data_pipeline.validation.schema.payment import Payment
 from batch_data_pipeline.validation.helpers import validate_records
-from batch_data_pipeline.ingestion.loaders.upload_quarantined_to_bucket import upload_quarantine_to_gcs
-from batch_data_pipeline.ingestion.loaders.upload_validated_to_bucket import upload_validated_to_gcs
+from batch_data_pipeline.ingestion.loaders.upload_quarantined_to_bucket import upload_quarantine_to_bucket
+from batch_data_pipeline.ingestion.loaders.upload_validated_to_bucket import upload_validated_to_bucket
 
 def read_csv(path: Path) -> List[Dict[str, Any]]:
     with path.open("r", encoding="utf-8") as f:
@@ -60,16 +60,16 @@ def ingest_payments(day_folder: Path, run_dt: date, bucket: str) -> Dict[str, An
     cleaned, invalid = validate_payment_rows(rows)
 
     # 3. Load validated rows
-    validated_path = upload_validated_to_gcs(
-        bucket_name=bucket,
+    validated_path = upload_validated_to_bucket(
+        bucket=bucket,
         entity=entity,
         run_date=run_dt.isoformat(),
         rows=cleaned,
     )
 
     # 4. Load invalid rows
-    quarantine_path = upload_quarantine_to_gcs(
-        bucket_name=bucket,
+    quarantine_path = upload_quarantine_to_bucket(
+        bucket=bucket,
         entity=entity,
         run_date=run_dt.isoformat(),
         rows=invalid,
