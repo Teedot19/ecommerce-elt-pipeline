@@ -5,8 +5,7 @@ description = "Batch data ingestion and processing pipeline."
 authors = ["Teedot19 <taiwo_dotun@yahoo.com>"]
 readme = "README.md"
 packages = [
-    { include = "ingestion", from = "src" },
-    { include = "validation", from = "src" },
+    { include = "batch_data_pipeline", from = "src" },
     { include = "orchestration"}
 ]
 

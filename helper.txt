@@ -1,0 +1,155 @@
+using DictReader
+
+with open('customer.csv','r') as out_file:
+return list(csv.DictReader(out_file))
+
+
+
+
+Using csv.reader
+with open('employee.csv') as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        print(row)
+
+
+
+
+
+using DictWriter
+
+with open('employee.csv','w',newline = '') as out_file:
+
+    writer = csv.DictWriter(out_file, fieldnames=product_data[0].keys())
+    writer.writeheader()
+    writer.writerows(product_data)
+
+
+
+using csv.writer
+
+with open('employee.csv','w',newline = '') as in_file:
+    writer = csv.writer(in_file)
+    for row in data:
+        writer.writerow(row)
+
+
+
+
+
+
+#Validation
+def validate_rows(rows):
+    valid = []
+    invalid = []
+
+    for row in rows:
+        if row["amount"] < 0:
+            bad = row.copy()
+            bad["error"] = "negative amount"
+            invalid.append(bad)
+            continue
+        
+        valid.append(row)
+
+    return valid, invalid
+
+valid, invalid = validate_rows(parsed)
+load_csv("clean_logs.csv", valid)
+load_csv("invalid_logs.csv", invalid)
+
+
+
+
+
+#Parsing two ways 
+
+### When the columns are few, so you manually write them out
+def parse_rows_new_data(rows):
+    parsed = []
+    for row in rows:
+
+        new_row = {
+            'sale_id': int(row['sale_id']),
+            'amount_usd': float(row['amount_usd']),
+            'rates_type': row['rates_type']
+        }
+        # Appends the new, independent dictionary
+        parsed.append(new_row)
+    return parsed
+
+### or
+    def parse_rows(rows):
+    parsed = []
+    for row in rows:
+        
+        parsed.append({
+        'sale_id': int(row['sale_id']),
+        'amount_usd': float(row['amount_usd']),
+        'rates_type': row['rates_type']
+        })
+    return parsed
+
+### When you dont want to write the columns out so you create a copy
+
+def parse_rows(rows):
+    parsed = []
+
+    for row in rows:
+        r_copy = row.copy()
+        r_copy["id"] = int(r_copy["id"])
+        r_copy["amount"] = float(r_copy["amount"])
+        parsed.append(r_copy)
+    
+    return parsed
+
+
+
+
+
+#Helper function to support DRY
+    def make_safe_copy(data_dict):
+    """Returns a shallow copy of a single dictionary."""
+    return data_dict.copy()
+
+
+
+    def validate_and_transform_rows(rows):
+    """
+    Processes rows safely using a helper function to manage copying.
+    Adheres to DRY principles.
+    """
+    valid_transformed = []
+
+    for row in rows:
+        # Instead of 'r_copy = row.copy()', we call our helper function
+        current_item = make_safe_copy(row)
+        
+        # Validation checks on the safe copy
+        if current_item.get("amount") is None:
+            continue
+        if current_item["amount"] < 0:
+            continue
+
+
+
+
+
+
+
+
+##So the rule you want is this:
+✔ Filtering rows → NO copy needed
+✔ Validating rows → NO copy needed (unless adding error info)
+✔ Transforming rows → ALWAYS copy
+✔ Parsing rows → ALWAYS copy
+✔ Cleaning rows (destructive) → optional copy
+✔ Selecting rows → NO copy
+✔ Adding new columns → MUST copy
+✔ Converting types → MUST copy
+✔ Enriching → MUST copy
+
+
+
+##Stick to the list comprehension with or statements as long as the conditions fit on one line and remain easy to understand at a glance.
+valid = [row for row in rows if row["amount"] > 0]
