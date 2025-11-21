@@ -139,16 +139,8 @@ observability and logging
 
 The orchestration layer coordinates ingestion, Snowpipe processing, and dbt model execution.
 
-8. Architecture Diagram
 
-Below is the abstract and detailed diagram representing the platform architecture:
-
-Add the image here:
-![Architecture Diagram](A_flowchart_infographic_titled_%22Production-Style_B.png)
-
-Or upload the updated version to your repo and reference it from there.
-
-9. Summary
+8. Summary
 
 This project delivers a realistic, end-to-end data engineering system that covers:
 
