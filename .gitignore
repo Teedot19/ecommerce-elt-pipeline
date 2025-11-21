@@ -192,3 +192,28 @@ tmp/
 temp/
 scratch/
 tests/__pycache__/
+
+
+
+# Legacy tests to ignore
+tests/legacy/test_file_finder.py
+tests/legacy/test_gcs_loader.py
+tests/legacy/test_generator.py
+tests/legacy/test_pipeline.py
+
+# Validation test config to ignore
+tests/validation/conftest.py
+
+# Misc junk / notebooks you don't want tracked
+exercise.ipynb
+misc/helper.txt
+misc/test_clean_amount.py
+misc/unit_test.py
+misc/working_book.ipynb
+
+# Old module you don't want to keep
+my_module.py
+
+# Local folders you don't want in repo
+bucket/
+dev_test_ingestion.py
