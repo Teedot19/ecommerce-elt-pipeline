@@ -1,5 +1,0 @@
-sale_id,amount_usd,rates_type,amount_converted
-1,100.0,standard,110.0
-2,200.0,standard,220.0
-3,300.0,premium,360.0
-4,150.0,premium,180.0
