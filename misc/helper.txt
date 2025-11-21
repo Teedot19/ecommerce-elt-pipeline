@@ -153,3 +153,20 @@ poetry run python -m batch_data_pipeline.main_runner 2025-11-15
 
 ##Stick to the list comprehension with or statements as long as the conditions fit on one line and remain easy to understand at a glance.
 valid = [row for row in rows if row["amount"] > 0]
+
+
+
+
+##Dictionary Unpacking The unpacking operator ** must be applied to an actual dictionary object at the time the function is called.
+##You MUST use FOR LOOP
+car_list = [
+    {"make": "Toyota", "model": "Camry", "year": 2023, "color": "blue"},
+    {"make": "Honda", "model": "Accord", "year": 2024, "color": "red"}
+]
+
+def describe_car(make, model, year, color):
+    print(f"I have a {color} {year} {make} {model}.")
+
+# This is the correct approach:
+for car in car_list:
+    describe_car(**car) 

@@ -36,4 +36,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.dagster]
-module_name = "orchestration.definitions"
+module_name = "batch_data_pipeline.orchestration.definitions"

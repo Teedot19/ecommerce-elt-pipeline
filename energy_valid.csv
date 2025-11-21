@@ -1,0 +1,4 @@
+home_id,appliance,timestamp,kwh,cost,category
+H001,heater,2025-02-10T07:30:00Z,1.125,0.2475,HIGH
+H001,ac,2025-02-10T08:45:00Z,2.2,0.484,HIGH
+H002,fridge,2025-02-10T09:00:00Z,0.36,0.0792,MEDIUM

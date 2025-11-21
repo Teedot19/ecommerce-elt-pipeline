@@ -2,10 +2,11 @@
 from dagster import asset
 from dagster_dbt import DbtCliResource
 
-from .extract import daily_partitions
+from batch_data_pipeline.orchestration.assets.ecommerce_ingestion import daily_partitions
 
 
-@asset(partitions_def=daily_partitions, deps=["run_ecommerce_ingestion"])
+
+@asset(partitions_def=daily_partitions, deps=["ingestion_summary"])
 def dbt_build(context, dbt: DbtCliResource):
     """Runs dbt build after ingestion completes for this partition."""
     invocation = dbt.cli(["build"])
