@@ -1,141 +1,181 @@
-# **Case Study: Production-Style Batch Data Pipeline**
+# E-Commerce ELT Pipeline
 
-## **Overview**
+**Python • Dagster • dbt • Google Cloud Storage • Snowflake**
 
-This case study presents a full, production-style batch data pipeline covering the entire lifecycle of a modern data platform. It includes synthetic data generation, validation, quarantining, transformation, cloud ingestion, warehouse automation, and orchestration.
+## Table of Contents
 
----
+1.  [Overview](#overview)
+2.  [Architecture: High-Level Flow](#architecture-high-level-flow)
+3.  [Features](#features)
+    *   [Ingestion Layer (Python)](#ingestion-layer-python)
+    *   [Orchestration (Dagster)](#orchestration-dagster)
+    *   [Transformations (dbt)](#transformations-dbt)
+    *   [CI/CD (GitHub Actions)](#cicd-github-actions)
+4.  [Repository Structure](#repository-structure)
+5.  [Data Layout in GCS](#data-layout-in-gcs)
+6.  [Running the Pipeline](#running-the-pipeline)
+    *   [Run Ingestion Manually](#run-ingestion-manually)
+    *   [Run Dagster](#run-dagster)
+    *   [dbt Lineage](#dbt-lineage)
+7.  [CI Workflows](#ci-workflows)
+    *   [Python CI](#python-ci)
+    *   [dbt CI](#dbt-ci)
+8.  [Engineering Principles](#engineering-principles)
+9.  [What This Project Demonstrates](#what-this-project-demonstrates)
 
-## **Synthetic Data Generation**
+## Overview
 
-Synthetic event records were generated using Faker to emulate a source system. Noise and inconsistencies were intentionally introduced, including:
+This project implements a modular, production-style ELT pipeline. It ingests synthetic e-commerce data, validates it, stores it in Google Cloud Storage, and transforms it in Snowflake using dbt. The pipeline is orchestrated with Dagster and follows strict software engineering principles, including:
 
-* Incorrect data types
-* Missing fields
-* Malformed timestamps
-* Out-of-range values
+*   Single Responsibility Principle (SRP)
+*   Don't Repeat Yourself (DRY)
+*   Pure functions
+*   Dependency injection
+*   Full testability
 
-This ensured downstream logic performed real-world validation instead of relying on clean, unrealistic test data.
+This repository demonstrates modern data engineering practices end-to-end, making it suitable for portfolio projects and real-world workloads.
 
----
-
-## **Ingestion and Validation Pipeline**
-
-The ingestion layer uses a strict batch-processing model with schema enforcement.
-
-### **Pydantic Schemas**
-
-Schemas were defined using Pydantic to guarantee structured, validated inputs. Benefits include:
-
-* Clear, strongly typed schemas
-* Safe type coercion
-* Fine-grained field validation
-* Automatic separation of malformed records
-* Cleaner and more testable transformations
-
-### **Valid vs. Quarantine Routing**
-
-All incoming records are partitioned into:
-
-* **Valid records**
-* **Invalid records (quarantine)**
-
-Invalid data is retained for investigation and replay, preventing silent data loss and aligning with production best practices.
-
----
-
-## **Testing for Reliability**
-
-A testing suite was created using pytest, covering:
-
-* Unit tests for transformation logic
-* Batch wrapper tests
-* End-to-end integration tests
-
-The test suite ensures deterministic behavior and prevents regressions.
-
----
-
-## **Cloud Storage Layer**
-
-Validated outputs are exported to Google Cloud Storage (GCS). Folder layout mirrors production data lakes:
+## Architecture: High-Level Flow
 
 ```
-gs://bucket/
-    raw/
-    validated_raw/
-    quarantine_raw/
+Data Generator (Faker) ↓ Raw CSV Output ↓ Ingestion Layer (Extract → Validate → Partition)
+├── Validated Records → validated_raw/
+├── Invalid Records → quarantine_raw/
+└── Full Copy → raw/ ↓ GCS Storage (partitioned) ↓ Snowflake (Snowpipe or External Tables) ↓ dbt Models (Staging → Intermediate → Marts)
 ```
 
-This structure supports lineage, governance, and reprocessing workflows.
+## Features
 
----
+### Ingestion Layer (Python)
 
-## **Snowflake Ingestion via Snowpipe**
+*   Entity-specific ingestion for customers, products, orders, order_items, and payments.
+*   Pydantic-based schema validation.
+*   Invalid rows are routed to a quarantine area with detailed error metadata.
+*   Valid rows are written to `validated_raw`.
+*   A full raw copy is preserved.
+*   All I/O is isolated behind dependency-injected GCS loaders.
+*   Designed for readability, testability, and maintainability.
 
-A Snowflake external stage points to the GCS bucket.
+### Orchestration (Dagster)
 
-### **Automated Ingestion**
+*   Daily partitions
+*   Asset-based orchestration
+*   Automatic triggering of dbt after ingestion
+*   Lineage visualization
+*   Arbitrary re-materialization and backfills
+*   Clear separation of compute and definitions
 
-New file arrivals trigger Snowpipe through Google Pub/Sub:
+### Transformations (dbt)
 
-1. GCS event notifies Pub/Sub
-2. Pub/Sub triggers Snowpipe
-3. Snowpipe runs `COPY INTO` automatically
+*   Snowflake-based ELT modeling
+*   Layered schema:
+    *   staging
+    *   intermediate
+    *   marts
+*   Schema tests, relationship tests, and not-null checks
+*   Macros for standardization
+*   dbt Docs for lineage visualization
 
-This establishes a low‑maintenance, near‑real‑time ingestion path into the bronze/raw warehouse layer.
+### CI/CD (GitHub Actions)
 
----
+*   Python unit test workflow (pytest)
+*   dbt CI workflow using Snowflake credentials from GitHub Secrets
+*   Dependency caching for faster builds
 
-## **dbt Transformation Layers**
+## Repository Structure
 
-Snowflake tables are transformed using dbt, following a standard warehouse modeling pattern.
+```
+src/batch_data_pipeline/
+├── generators/           # synthetic data generator
+├── ingestion/
+│   ├── ingestors/       # per-entity ingestion (SRP enforced)
+│   ├── loaders/          # GCS upload helpers (DI, pure functions)
+│   └── validation/       # schemas + validation utilities
+├── orchestration/
+│   ├── assets/          # Dagster assets (ingestion, dbt)
+│   └── definitions.py   # Dagster project definitions
 
-### **Staging Layer**
+ecommerce_analytics/     # dbt project
+├── models/
+├── macros/
+├── snapshots/
+└── dbt_project.yml
 
-* Cleansing
-* Type normalization
-* Source alignment
+tests/                   # pytest suite
+docs/                    # architecture diagrams, case studies
+```
 
-### **Intermediate Layer**
+## Data Layout in GCS
 
-* Business logic
-* Joins and aggregations
+| Layer            | Description                                  | Example Path                                               |
+| ---------------- | -------------------------------------------- | ---------------------------------------------------------- |
+| `raw/`           | Original generator output                      | `raw/ecommerce/2025-11-15/orders_2025-11-15.csv`           |
+| `validated_raw/` | Rows passing Pydantic validation             | `validated_raw/orders/2025/11/15/orders.csv`                |
+| `quarantine_raw/`| Rejected rows                                | `quarantine_raw/orders/2025/11/15/orders_bad.csv`           |
 
-### **Marts Layer**
+All layers are grouped by entity and partitioned by date.
 
-* Final analytics‑ready tables
-* Domain‑specific datasets
+## Running the Pipeline
 
-This structure improves maintainability and modularity.
+### Run Ingestion Manually
 
----
+```bash
+poetry run python -m batch_data_pipeline.main_runner 2025-11-15
+```
 
-## **Dagster Orchestration**
+### Run Dagster
 
-Dagster orchestrates the system with:
+```bash
+poetry run dagster dev
+```
 
-* Asset definitions
-* Execution coordination
-* Dependency tracking
-* Lineage visualisation
-* Logging and observability
+The Dagster UI will be available at:
 
-Dagster ties together ingestion, Snowpipe automation, and dbt model execution.
+```
+http://localhost:3000
+```
 
----
+### dbt Lineage
 
-## **Summary**
+```bash
+cd ecommerce_analytics
+dbt docs generate
+dbt docs serve --port 8082
+```
 
-This project implements a realistic, fully integrated data engineering system including:
+## CI Workflows
 
-* Synthetic data generation
-* Pydantic‑driven validation
-* Quarantine handling
-* GCS data lake ingestion
-* Automated Snowflake ingestion via Snowpipe
-* Layered dbt transformations
-* Dagster orchestration
-* Comprehensive testing
+### Python CI
 
-The design reflects production‑grade patterns and software engineering discipline.
+*   Runs unit tests with pytest
+*   Installs dependencies via Poetry
+*   Triggered on push and pull requests
+
+### dbt CI
+
+*   Builds the dbt project in Snowflake
+*   Uses GitHub Secrets for authentication
+*   Executes `dbt build --warn-error` and `dbt test`
+
+## Engineering Principles
+
+This project is intentionally designed to reflect real production engineering standards:
+
+*   **Single Responsibility Principle (SRP):** Each ingestion module handles exactly one entity.
+*   **Pure Functions:** Extract, validate, and transform logic are isolated from I/O.
+*   **Dependency Injection:** GCS clients are passed explicitly.
+*   **No Hidden State:** No implicit mutations or global clients.
+*   **Fully Testable:** Every ingestion function has pytest coverage.
+*   **Consistent Naming & Layout:** Predictable entity → file → schema mapping.
+*   **Low Coupling:** Validation, loading, and orchestration are independent modules.
+
+## What This Project Demonstrates
+
+*   End-to-end ELT orchestration
+*   Cloud-native data platform design
+*   Clean and maintainable Python pipelines
+*   dbt modeling and testing patterns
+*   Dagster asset-based orchestration
+*   CI-driven reliability
+*   Partitioned ingestion into GCS & Snowflake
+
