@@ -66,7 +66,7 @@ The data pipeline is designed to scale efficiently without performance degradati
 
 ## 🧭 7. The Entire Pipeline Runs Automatically
 
-Automation is key to minimizing manual intervention.
+Automation is key to minimising manual intervention.
 
 **Business Perspective:** The system updates itself automatically whenever new data arrives, without requiring manual triggers or refreshes.
 
@@ -78,7 +78,16 @@ Providing actionable insights to business stakeholders is the ultimate goal.
 
 **Business Perspective:** Managers have access to real-time dashboards displaying daily sales, top products, customer trends, payment issues, and overall revenue performance.
 
-**Technical Details:** A Power BI dashboard connects to the modeled data marts in Snowflake, providing near-real-time reporting capabilities.
+**Technical Details:** A Power BI dashboard connects to the modelled data marts in Snowflake, providing near-real-time reporting capabilities.
+
+## 🚀 9. Scalability & Performance Considerations
+* Batch size tuning
+* Micro-batch ingestion
+* GCS partitioning by date
+* File clustering for predictable Snowpipe ingestion
+* Incremental models in dbt
+* Idempotent Dagster runs
+* Partition Pruning
 
 ## 🎯 What this project demonstrates
 
@@ -89,3 +98,4 @@ Providing actionable insights to business stakeholders is the ultimate goal.
 *   dbt transformation + star schema modelling
 *   Orchestration with Dagster
 *   BI/analytics delivery with Power BI
+
