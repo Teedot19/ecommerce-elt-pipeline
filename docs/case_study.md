@@ -1,163 +1,141 @@
-Case Study: Building a Production-Style Batch Data Pipeline
-Overview
+# **Case Study: Production-Style Batch Data Pipeline**
 
-This project implements a complete, production-style batch data pipeline that simulates the full lifecycle of a modern data platform. It includes synthetic data generation, validation, quarantining, transformation, cloud storage ingestion, automated warehouse loading, and orchestration. The goal was to design a realistic system that mirrors how contemporary data teams operate in high-scale environments.
+## **Overview**
 
-1. Synthetic Data Generation
+This case study presents a full, production-style batch data pipeline covering the entire lifecycle of a modern data platform. It includes synthetic data generation, validation, quarantining, transformation, cloud ingestion, warehouse automation, and orchestration.
 
-To act as the source system provider, I generated synthetic events using Faker, a Python library that produces realistic records. I intentionally introduced noisy, inconsistent, and malformed values to replicate typical real-world data quality problems such as:
+---
 
-incorrect types
+## **Synthetic Data Generation**
 
-missing values
+Synthetic event records were generated using Faker to emulate a source system. Noise and inconsistencies were intentionally introduced, including:
 
-malformed timestamps
+* Incorrect data types
+* Missing fields
+* Malformed timestamps
+* Out-of-range values
 
-out-of-range measurements
+This ensured downstream logic performed real-world validation instead of relying on clean, unrealistic test data.
 
-This ensured the downstream ingestion logic had to perform actual validation rather than relying on clean test data.
+---
 
-2. Ingestion and Validation Pipeline
+## **Ingestion and Validation Pipeline**
 
-The ingestion layer uses a batch processing model with strict schema enforcement.
+The ingestion layer uses a strict batch-processing model with schema enforcement.
 
-2.1 Pydantic Schemas
+### **Pydantic Schemas**
 
-I used Pydantic to define strongly typed schemas for each stage. This ensured every transformation step received structured, validated, and predictable inputs.
+Schemas were defined using Pydantic to guarantee structured, validated inputs. Benefits include:
 
-Pydantic provided several benefits:
+* Clear, strongly typed schemas
+* Safe type coercion
+* Fine-grained field validation
+* Automatic separation of malformed records
+* Cleaner and more testable transformations
 
-schema correctness and clarity
+### **Valid vs. Quarantine Routing**
 
-automatic type coercion where safe
+All incoming records are partitioned into:
 
-strict field-level validation rules
+* **Valid records**
+* **Invalid records (quarantine)**
 
-easy quarantining of malformed events
+Invalid data is retained for investigation and replay, preventing silent data loss and aligning with production best practices.
 
-cleaner, safer, testable transformations
+---
 
-2.2 Valid vs Quarantine Routing
+## **Testing for Reliability**
 
-Incoming records are partitioned into:
+A testing suite was created using pytest, covering:
 
-valid_records
+* Unit tests for transformation logic
+* Batch wrapper tests
+* End-to-end integration tests
 
-invalid_records (quarantine)
+The test suite ensures deterministic behavior and prevents regressions.
 
-Invalid data is never deleted. It is preserved for investigation, debugging, and potential replay. This aligns with production best practices and prevents silent data loss.
+---
 
-3. Testing for Reliability
+## **Cloud Storage Layer**
 
-To ensure correctness and prevent regressions, I wrote:
+Validated outputs are exported to Google Cloud Storage (GCS). Folder layout mirrors production data lakes:
 
-unit tests for individual transformations
-
-batch wrapper tests
-
-integration tests for end-to-end pipeline execution
-
-Tests were written using pytest and cover model-level behavior, edge cases, and the pipeline runner.
-
-This testing strategy ensures the pipeline is deterministic and refactor-safe.
-
-4. Cloud Storage Layer
-
-Validated records are exported to Google Cloud Storage (GCS).
-
-The output folder structure mimics real production data lakes:
-
+```
 gs://bucket/
-  raw/
-  validated_raw/
-  quarantine_raw/
+    raw/
+    validated_raw/
+    quarantine_raw/
+```
 
+This structure supports lineage, governance, and reprocessing workflows.
 
-This separation supports lineage tracking, governance, and reprocessing.
+---
 
-5. Snowflake Ingestion via Snowpipe
+## **Snowflake Ingestion via Snowpipe**
 
-To simulate a production-ready warehouse, I used Snowflake with an external stage pointing to the GCS bucket.
+A Snowflake external stage points to the GCS bucket.
 
-5.1 Automated Ingestion
+### **Automated Ingestion**
 
-Snowflake ingests new files using Snowpipe, triggered through Google Pub/Sub.
-Whenever new data lands in GCS:
+New file arrivals trigger Snowpipe through Google Pub/Sub:
 
-Pub/Sub notifies Snowflake
+1. GCS event notifies Pub/Sub
+2. Pub/Sub triggers Snowpipe
+3. Snowpipe runs `COPY INTO` automatically
 
-Snowpipe executes a COPY INTO command
+This establishes a low‑maintenance, near‑real‑time ingestion path into the bronze/raw warehouse layer.
 
-Data is loaded into the bronze/raw layer
+---
 
-This creates a near-real-time, low-maintenance ingestion path.
+## **dbt Transformation Layers**
 
-6. dbt Transformation Layers
+Snowflake tables are transformed using dbt, following a standard warehouse modeling pattern.
 
-Data is transformed in Snowflake using dbt, following the standard warehouse modeling pattern:
+### **Staging Layer**
 
-6.1 Staging Layer
+* Cleansing
+* Type normalization
+* Source alignment
 
-source cleaning
+### **Intermediate Layer**
 
-type alignment
+* Business logic
+* Joins and aggregations
 
-schema normalization
+### **Marts Layer**
 
-6.2 Intermediate Layer
+* Final analytics‑ready tables
+* Domain‑specific datasets
 
-business logic
+This structure improves maintainability and modularity.
 
-joins
+---
 
-aggregations
+## **Dagster Orchestration**
 
-6.3 Marts Layer
+Dagster orchestrates the system with:
 
-analytics-ready models
+* Asset definitions
+* Execution coordination
+* Dependency tracking
+* Lineage visualisation
+* Logging and observability
 
-domain-specific datasets
+Dagster ties together ingestion, Snowpipe automation, and dbt model execution.
 
-final tables consumed by dashboards
+---
 
-This approach keeps transformations modular, testable, and maintainable.
+## **Summary**
 
-7. Dagster Orchestration
+This project implements a realistic, fully integrated data engineering system including:
 
-I used Dagster to orchestrate the entire pipeline.
-Dagster provides:
+* Synthetic data generation
+* Pydantic‑driven validation
+* Quarantine handling
+* GCS data lake ingestion
+* Automated Snowflake ingestion via Snowpipe
+* Layered dbt transformations
+* Dagster orchestration
+* Comprehensive testing
 
-data asset definitions
-
-execution orchestration
-
-dependency management
-
-lineage visualization
-
-observability and logging
-
-The orchestration layer coordinates ingestion, Snowpipe processing, and dbt model execution.
-
-
-8. Summary
-
-This project delivers a realistic, end-to-end data engineering system that covers:
-
-synthetic data generation
-
-validation using Pydantic
-
-quarantine handling
-
-cloud data lake ingestion
-
-Snowflake auto-ingestion
-
-multi-layer dbt modeling
-
-pipeline orchestration with Dagster
-
-robust testing and schema guarantees
-
-It demonstrates both software engineering rigor and production-grade data engineering design.
+The design reflects production‑grade patterns and software engineering discipline.
